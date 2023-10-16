@@ -18,10 +18,14 @@ public struct MenuVolumeSlider<Label: View>: View {
     
     // MARK: Init
     
+    private var gestureCallback: ((CGFloat) -> Void)?
+    
     public init(
-        value: Binding<CGFloat>
+        value: Binding<CGFloat>,
+        gestureCallback: ((CGFloat) -> Void)? = nil
     ) where Label == EmptyView {
         _value = value
+        self.gestureCallback = gestureCallback
     }
     
     public init<S>(
@@ -55,12 +59,14 @@ public struct MenuVolumeSlider<Label: View>: View {
             MenuSlider(
                 value: $value,
                 label: { label },
-                image: VolumeSliderIcon()
+                image: VolumeSliderIcon(),
+                gestureCallback: gestureCallback
             )
         } else {
             MenuSlider(
                 value: $value,
-                image: VolumeSliderIcon()
+                image: VolumeSliderIcon(),
+                gestureCallback: gestureCallback
             )
         }
     }

@@ -22,6 +22,8 @@ where Label: View, SliderImage: MenuSliderImage
     
     public var label: Label?
     
+    private var gestureValueChangedCallback: ((CGFloat) -> Void)? = nil
+    
     // MARK: Environment
     
     @Environment(\.colorScheme) private var colorScheme
@@ -83,10 +85,12 @@ where Label: View, SliderImage: MenuSliderImage
     @_disfavoredOverload
     public init(
         value: Binding<CGFloat>,
-        image: @autoclosure () -> SliderImage
+        image: @autoclosure () -> SliderImage,
+        gestureCallback: ((CGFloat) -> Void)? = nil
     ) where Label == EmptyView {
         _value = value
         sliderImage = image()
+        self.gestureValueChangedCallback = gestureCallback
     }
     
     @_disfavoredOverload
@@ -115,11 +119,13 @@ where Label: View, SliderImage: MenuSliderImage
     public init(
         value: Binding<CGFloat>,
         label: () -> Label,
-        image: @autoclosure () -> SliderImage
+        image: @autoclosure () -> SliderImage,
+        gestureCallback: ((CGFloat) -> Void)? = nil
     ) {
         _value = value
         self.label = label()
         sliderImage = image()
+        self.gestureValueChangedCallback = gestureCallback
     }
     
     // MARK: Body
@@ -228,6 +234,7 @@ where Label: View, SliderImage: MenuSliderImage
                         if self.value != newValue {
                             oldValue = self.value
                             self.value = newValue
+                            self.gestureValueChangedCallback?(self.value)
                             
                             if #available(macOS 11, *) {
                                 // don't update manually, it's being handled by onChange { }
